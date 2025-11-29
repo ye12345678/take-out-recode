@@ -13,23 +13,22 @@ services:
     ports:
       - '6379:6379'
   mysql:
-    image: mysql
+    image: mysql:8.0
     container_name: go-mysql
+    command:
+      --max_connections=1000
+      --character-set-server=utf8mb4 
+      --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       TZ: Asia/Shanghai
       LANG: en_US.UTF-8
-    ports:
-      - '3306:3306'
     volumes:
-      - /data/mysql/data:/var/lib/mysql
-      - /data/mysql/config:/config/my.cnf:/etc/mysql/my.cnf
-    command:
-      --max_connections=1000
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_general_ci
-      --default-authentication-plugin=mysql_native_password
+      # 初始化数据库（注意脚本目录的相对位置）
+      - ./script/:/docker-entrypoint-initdb.d
   web:
     container_name: gin-server
     build:
@@ -38,8 +37,8 @@ services:
     restart: always
     volumes:
       # 这个共享卷是用来存放配置文件。
-      - /home/running/takeout/config/:/app/config/
+      - ./config/:/app/config/
       # 该共享卷用来存储日志文件
-      - /home/running/takeout/logs/:/app/logs/
+      - ./logs/:/app/logs/
     ports:
       - '8080-8080'

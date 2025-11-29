@@ -1,5 +1,5 @@
 # 编译阶段：引用最小编译环境
-FROM golang:1.21.0 AS builder
+FROM golang:1.25.1 AS builder
 
 # 镜像默认工作目录
 WORKDIR /build
